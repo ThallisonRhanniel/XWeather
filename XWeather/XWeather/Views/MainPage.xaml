@@ -2,10 +2,227 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="XWeather.Views.MainPage"
-             Title="{Binding Title}">
+             xmlns:forms="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+             xmlns:material="clr-namespace:XF.Material.Forms.UI;assembly=XF.Material"
+             xmlns:forms1="clr-namespace:Lottie.Forms;assembly=Lottie.Forms"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:mvvm="http://prismlibrary.com"
+             ios:Page.UseSafeArea="true"
+             mvvm:ViewModelLocator.AutowireViewModel="True"
+             BackgroundColor="#10103a">
 
-    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
-        <Label Text="Welcome to Xamarin Forms and Prism!" />
-    </StackLayout>
+    <AbsoluteLayout VerticalOptions="Fill">
+
+        <ScrollView AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Margin="10" VerticalScrollBarVisibility="Never">
+            <StackLayout>
+
+                <StackLayout >
+
+                    <StackLayout Orientation="Horizontal" Margin="0,15,0,0" HorizontalOptions="Center">
+                        <forms:CachedImage  
+                        Margin="0,4,10,0"
+                        Source="{Binding Icon}"
+                        Aspect="AspectFit"
+                        HeightRequest="23"
+                        WidthRequest="23" />
+                        <Label Text="Hoje" TextColor="White" FontSize="Large" Margin="0,3,0,0" HorizontalOptions="CenterAndExpand"  FontFamily="rimouski.ttf#rimouski"/>
+                    </StackLayout>
+
+                    <Label Text="{Binding Date, StringFormat='{0:dd MMMM, yyyy}'}" FontSize="12" TextColor="White" HorizontalOptions="CenterAndExpand" FontFamily="Muli.ttf#Muli" ></Label>
+
+                    <StackLayout Orientation="Horizontal"  HorizontalOptions="Center">
+                        <Label Text="{Binding Temperature}" TextColor="White" FontSize="80" Margin="22,0,0,0"  FontFamily="Central.ttf#Central"></Label>
+                        <Label Text=" °C" TextColor="White" FontSize="Large" VerticalOptions="Center" Margin="-13,-35,0,0" FontFamily="Central.ttf#Central"  ></Label>
+                    </StackLayout>
+
+
+
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal" Margin="0,0,0,20" >
+                    <StackLayout>
+                        <Label Text="Hoje" Margin="15,0,0,0" TextColor="White" FontFamily="Muli.ttf#Muli" />
+                        <material:MaterialCard CornerRadius="50" Elevation="1" IsVisible="{Binding IsToday}" HeightRequest="7" WidthRequest="7" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Padding="0" Margin="17,2,0,0" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ChangeClimateListCommand}" CommandParameter="today"/>
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                    <StackLayout HorizontalOptions="CenterAndExpand">
+                        <Label Text="Amanhã" HorizontalOptions="CenterAndExpand" TextColor="White" FontFamily="Muli.ttf#Muli" ></Label>
+                        <material:MaterialCard CornerRadius="50" IsVisible="{Binding IsTomorrow}" Elevation="1" HeightRequest="7" WidthRequest="7" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Padding="0" Margin="8,2,0,0" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ChangeClimateListCommand}" CommandParameter="tomorrow"/>
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                    <Label Text="Próximos 7 dias" TextColor="#478ad9" FontFamily="Muli.ttf#Muli" >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NextSevenDaysCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <material:MaterialIcon 
+                    Margin="-7,-12,10,0"
+                    WidthRequest="20"
+                    HeightRequest="20"
+                    Source="arrow_right"
+                    TintColor="#478ad9" >
+                        <material:MaterialIcon.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NextSevenDaysCommand}" />
+                        </material:MaterialIcon.GestureRecognizers>
+                    </material:MaterialIcon>
+                </StackLayout>
+
+                <CollectionView ItemsSource="{Binding HourlyWeatherList}"
+                            ItemSizingStrategy="MeasureFirstItem"
+                            HorizontalScrollBarVisibility="Never"
+                            VerticalScrollBarVisibility="Never"
+                            HeightRequest="115">
+                    <CollectionView.ItemsLayout >
+                        <LinearItemsLayout Orientation="Horizontal"
+                                       ItemSpacing="10" 
+                                       />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate >
+                        <DataTemplate>
+                            <material:MaterialCard CornerRadius="300" BorderColor="#3c3c72"   Elevation="1" WidthRequest="{x:OnPlatform Default='26', iOS='28'}" HorizontalOptions="Center" BackgroundColor="#1e1e45" >
+                                <StackLayout Orientation="Vertical" VerticalOptions="Center" HorizontalOptions="Center" >
+                                    <Label
+                                    Text="{Binding Time, StringFormat='{}{0:HH\\:mm}'}"
+                                    FontFamily="Muli.ttf#Muli"
+                                    FontSize="9"
+                                    TextColor="White"
+                                    HorizontalOptions="Center"
+                                    LineBreakMode="TailTruncation"
+                                    FontAttributes="Italic"
+                                    VerticalOptions="End" />
+                                    <forms:CachedImage 
+                                    Source="{Binding Icon}"
+                                    Aspect="AspectFit"
+                                    HeightRequest="30"
+                                    WidthRequest="30" />
+                                    <Label
+                                    Text="{Binding Temperature, StringFormat='{0}°C'}"
+                                    FontSize="11"
+                                    FontFamily="Muli.ttf#Muli"
+                                    TextColor="White"
+                                    LineBreakMode="TailTruncation"
+                                    FontAttributes="Italic"
+                                    VerticalOptions="End" />
+                                </StackLayout>
+                            </material:MaterialCard>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <StackLayout Orientation="Horizontal" Margin="0,25,0,0">
+                    <Label Text="{Binding Date, StringFormat='{0:dddd}'}" FontSize="15" TextColor="White" HorizontalOptions="Start" FontFamily="Muli.ttf#Muli" />
+                    <Label Text="{Binding AverageTemperature}" FontSize="15" TextColor="White" HorizontalOptions="EndAndExpand" FontFamily="Muli.ttf#Muli" />
+                </StackLayout>
+
+                <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand"/>
+
+                <!-- Informações inferior-->
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+
+                    <!-- Linha 0 -->
+                    <StackLayout Grid.Column="0" Grid.Row="0"  >
+                        <Label Text="NASCER DO SOL" FontSize="Micro" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <Label Text="{Binding SunriseTime, StringFormat='{}{0:HH\\:mm}'}" FontSize="Large" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand"/>
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="1" Grid.Row="0"  >
+                        <Label Text="PÔR DO SOL" FontSize="Micro" TextColor="White"  FontFamily="Muli.ttf#Muli"></Label>
+                        <Label Text="{Binding SunsetTime, StringFormat='{}{0:HH\\:mm}'}" FontSize="Large" TextColor="White"  FontFamily="Muli.ttf#Muli"></Label>
+                        <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand"/>
+                    </StackLayout>
+                    <!-- Fim da linha 0 -->
+
+                    <!-- Linha 1 -->
+                    <StackLayout Grid.Column="0" Grid.Row="1" >
+                        <Label Text="CHANCE DE CHUVA" FontSize="Micro" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <Label Text="{Binding PrecipProbability}" FontSize="Large" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand"/>
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="1" Grid.Row="1"  >
+                        <Label Text="UMIDADE" FontSize="Micro" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <Label Text="{Binding Humidity}" FontSize="Large" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand"/>
+                    </StackLayout>
+                    <!-- Fim da linha 1 -->
+
+                    <!-- Linha 2 -->
+                    <StackLayout Grid.Column="0" Grid.Row="2" >
+                        <Label Text="VENTO" FontSize="Micro" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <Label Text="{Binding WindSpeed}" FontSize="Large" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand"/>
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="1" Grid.Row="2"  >
+                        <Label Text="SENSAÇÃO TÉRMICA" FontSize="Micro" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <Label Text="{Binding ApparentTemperature}" FontSize="Large" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand"/>
+                    </StackLayout>
+                    <!-- Fim da linha 2 -->
+
+                    <!-- Linha 3 -->
+                    <StackLayout Grid.Column="0" Grid.Row="3" >
+                        <Label Text="INTENSIDADE" FontSize="Micro" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <Label Text="{Binding PrecipIntensity}" FontSize="Large" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand"/>
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="1" Grid.Row="3"  >
+                        <Label Text="PRESSÃO" FontSize="Micro" TextColor="White" FontFamily="Muli.ttf#Muli" ></Label>
+                        <Label Text="{Binding Pressure}" FontSize="Large" TextColor="White" FontFamily="Muli.ttf#Muli" ></Label>
+                        <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand"/>
+                    </StackLayout>
+                    <!-- Fim da linha 3 -->
+
+                    <!-- Linha 4 -->
+                    <StackLayout Grid.Column="0" Grid.Row="4" >
+                        <Label Text="VISIBILIDADE" FontSize="Micro" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <Label Text="{Binding Visibility}" FontSize="Large" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="1" Grid.Row="4"  >
+                        <Label Text="ÍNDICE UV" FontSize="Micro" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                        <Label Text="{Binding UvIndex }" FontSize="Large" TextColor="White" FontFamily="Muli.ttf#Muli"></Label>
+                    </StackLayout>
+                    <!-- Fim da linha 4 -->
+                </Grid>
+
+                <!-- rodapé  -->
+                <!-- O espaço extra na parte inferior é dedicado a celular que não possuem teclas fisicas.   -->
+                <BoxView HeightRequest="1" Color="LightGray"  Opacity="0.2" HorizontalOptions="FillAndExpand" Margin="0,0,0,50"/>
+
+
+            </StackLayout>
+        </ScrollView>
+
+        <StackLayout AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1" BackgroundColor="#424242" Opacity="0.9" IsVisible="{Binding AnimationIsVisible}">
+            <StackLayout  VerticalOptions="CenterAndExpand">
+                <forms1:AnimationView 
+                    Animation="{Binding AnimationFile}" 
+                    VerticalOptions="CenterAndExpand"
+                    HeightRequest="150"
+                    WidthRequest="150"
+                    AutoPlay="True" Loop="true"/>
+                <Label Text="{Binding AnimationText}" TextColor="White" HorizontalOptions="CenterAndExpand" FontSize="15" FontFamily="Muli.ttf#Muli" ></Label>
+
+                <Button Text="Entendi" FontFamily="Muli.ttf#Muli" BackgroundColor="Transparent"  TextColor="DodgerBlue" Margin="0,20,0,0" Command="{Binding OkayCommand}" IsVisible="{Binding ButtonOkayIsVisible}" ></Button>
+            </StackLayout>
+        </StackLayout>
+
+
+
+    </AbsoluteLayout>
 
 </ContentPage>

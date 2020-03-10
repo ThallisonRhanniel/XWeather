@@ -12,7 +12,6 @@
     <key>NSCalendarsUsageDescription</key>
     <string>Needs Calendar Permission</string>
     <key>UISupportedInterfaceOrientations</key>
-    <key>UISupportedInterfaceOrientations</key>
     <array>
       <string>UIInterfaceOrientationPortrait</string>
       <string>UIInterfaceOrientationLandscapeLeft</string>
