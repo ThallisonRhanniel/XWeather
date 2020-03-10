@@ -1,6 +1,8 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Lottie.Forms.Droid;
+using Plugin.CurrentActivity;
 using Prism;
 using Prism.Ioc;
 
@@ -16,7 +18,12 @@ namespace XWeather.Droid
 
             base.OnCreate(bundle);
 
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init(enableFastRenderer: true);
+            Xamarin.Essentials.Platform.Init(this, bundle);
             global::Xamarin.Forms.Forms.Init(this, bundle);
+            CrossCurrentActivity.Current.Init(this, bundle);
+            AnimationViewRenderer.Init();
+            XF.Material.Droid.Material.Init(this, bundle);
             LoadApplication(new App(new AndroidInitializer()));
         }
     }

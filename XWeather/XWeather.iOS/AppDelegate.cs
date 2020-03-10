@@ -1,4 +1,5 @@
 ﻿using Foundation;
+using Lottie.Forms.iOS.Renderers;
 using Prism;
 using Prism.Ioc;
 using UIKit;
@@ -21,8 +22,11 @@ namespace XWeather.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init();
+            XF.Material.iOS.Material.Init();
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App(new iOSInitializer()));
+            AnimationViewRenderer.Init();
 
             return base.FinishedLaunching(app, options);
         }
