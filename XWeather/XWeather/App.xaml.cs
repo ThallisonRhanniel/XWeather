@@ -30,6 +30,7 @@ namespace XWeather
         {
             containerRegistry.RegisterForNavigation<NavigationPage>();
             containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
+            containerRegistry.RegisterForNavigation<WeeklyView, WeeklyViewViewModel>();
         }
     }
 }

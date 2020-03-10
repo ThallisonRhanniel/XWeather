@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:material="clr-namespace:XF.Material.Forms.UI;assembly=XF.Material"
+             xmlns:forms="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+             ios:Page.UseSafeArea="true"
+             BackgroundColor="#f2fbff"
+             x:Class="XWeather.Views.WeeklyView">
+
+    <ScrollView AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" Margin="10" VerticalScrollBarVisibility="Never">
+        <StackLayout>
+
+
+            <!-- Adicionei o StackLayout para aumentar a área clicável. -->
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Start" HeightRequest="56" MinimumHeightRequest="56" >
+                <forms:CachedImage WidthRequest="30"
+                                   x:Name="ClosePopup"
+                                   VerticalOptions="Center"
+                                   Source="arrow_right"
+                                   Rotation="180"
+                                   HorizontalOptions="Start"
+                                   Margin="5,0,26,0"
+                                   HeightRequest="30">
+                    <forms:CachedImage.GestureRecognizers>
+                        <TapGestureRecognizer Command="{prism:GoBack}" />
+                    </forms:CachedImage.GestureRecognizers>
+                </forms:CachedImage>
+            </StackLayout>
+
+
+            <Label LineBreakMode="WordWrap" Margin="12,10,20,0">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Próximos " FontSize="15" TextColor="#bdbdbd"   FontFamily="Muli.ttf#Muli"/>
+                        <Span Text="7 dias"  FontSize="15" FontFamily="Muli.ttf#Muli"  TextColor="#515669"  />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+
+            <!-- Card View. -->
+            <material:MaterialCard CornerRadius="10" Margin="10,5,10,20" Elevation="{x:OnPlatform Default='2', iOS='0'}" BackgroundColor="White" HeightRequest="110" HorizontalOptions="FillAndExpand" >
+                <StackLayout Orientation="Horizontal" >
+                    <!-- Lado Esquerdo -->
+                    <StackLayout  VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                        <StackLayout Orientation="Horizontal" Margin="0,0,0,15">
+                            <Label Text="{Binding Date, StringFormat='{0:dddd}'}" TextColor="#44495c" FontFamily="Muli.ttf#Muli" />
+                            <forms:CachedImage  
+                                Margin="5,1,0,0"
+                                Source="{Binding Icon}"
+                                Aspect="AspectFit"
+                                HeightRequest="17"
+                                WidthRequest="17" />
+                        </StackLayout>
+
+                        <Label LineBreakMode="WordWrap" Margin="0,0,0,14">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Vento             " FontSize="13"  TextColor="#515669" FontAttributes="Bold" FontFamily="Muli.ttf#Muli"/>
+                                    <Span Text="{Binding WindSpeed}"  FontSize="13" FontFamily="Muli.ttf#Muli" TextColor="#bdbdbd"  />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+
+                        <Label LineBreakMode="WordWrap">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Visibilidade    "  FontSize="13" TextColor="#515669" FontAttributes="Bold"  FontFamily="Muli.ttf#Muli"/>
+                                    <Span Text="{Binding Visibility}"  FontSize="13" FontFamily="Muli.ttf#Muli" TextColor="#bdbdbd" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </StackLayout>
+                    <!-- Fim do lado Esquerdo -->
+
+                    <!-- Lado Direito -->
+                    <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+
+                        <Label LineBreakMode="WordWrap" Margin="0,0,0,16"  HorizontalOptions="EndAndExpand" >
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding TemperatureMin, StringFormat='{0}°C -'}"  TextColor="#515669" FontAttributes="Bold"  FontSize="13"  FontFamily="Muli.ttf#Muli"/>
+                                    <Span Text="{Binding TemperatureMax, StringFormat=' {0}°C'}"   TextColor="Black"  FontSize="13"  FontFamily="Muli.ttf#Muli" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+
+
+                        <Label LineBreakMode="WordWrap" Margin="0,0,0,15" >
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Humidade       " TextColor="#515669"  FontSize="13"  FontFamily="Muli.ttf#Muli"/>
+                                    <Span Text="{Binding Humidity}"   FontFamily="Muli.ttf#Muli" TextColor="#bdbdbd" FontSize="13" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+
+                        <Label LineBreakMode="WordWrap">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="UV                    " TextColor="#515669" FontFamily="Muli.ttf#Muli"  FontSize="13" />
+                                    <Span Text="{Binding UvIndex}"   FontFamily="Muli.ttf#Muli" TextColor="#bdbdbd" FontSize="13" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+
+                    </StackLayout>
+                    <!-- Fim do lado Direito -->
+                </StackLayout>
+
+            </material:MaterialCard>
+
+
+            <CollectionView ItemsSource="{Binding WeeklyWeatherList}"
+                            ItemSizingStrategy="MeasureFirstItem"
+                            VerticalOptions="FillAndExpand"
+                            HorizontalScrollBarVisibility="Never"
+                            VerticalScrollBarVisibility="Never"
+                            HeightRequest="115">
+                <CollectionView.ItemsLayout >
+                    <LinearItemsLayout Orientation="Vertical"
+                                       ItemSpacing="15" 
+                                       />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate >
+                    <DataTemplate>
+                        <StackLayout Orientation="Horizontal"  HeightRequest="50">
+                            <StackLayout Margin="20,0,0,30">
+                                <Label Text="{Binding Time, StringFormat='{0:dddd}'}" TextColor="#515669" FontFamily="Muli.ttf#Muli" ></Label>
+                                <StackLayout Orientation="Horizontal" >
+                                    <forms:CachedImage  
+                                        Source="rain_drop"
+                                        Aspect="AspectFit"
+                                        HorizontalOptions="Start"
+                                        Margin="25,0,0,0"
+                                        HeightRequest="16"
+                                        WidthRequest="16" />
+                                    <Label Text="{Binding PrecipProbability}" FontSize="13" FontFamily="Muli.ttf#Muli" TextColor="#bdbdbd" ></Label>
+                                </StackLayout>
+                            </StackLayout>
+
+                            <!-- Adicionei no StackLayout para forçar que os 3 itens fiquem alinhados. -->
+                            <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand" Margin="0,0,30,0">
+                                <Label LineBreakMode="WordWrap"   VerticalOptions="Center" >
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding TemperatureMin, StringFormat='{0}°C'}"  TextColor="#515669" FontAttributes="Bold"  FontSize="15"  FontFamily="Muli.ttf#Muli"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+
+                                <forms:CachedImage  
+                                    Source="{Binding Icon}"
+                                    Aspect="AspectFit"
+                                    Margin="20,0,20,0"
+                                    HeightRequest="23"
+                                    WidthRequest="23" />
+
+                                <Label LineBreakMode="WordWrap"   VerticalOptions="Center" >
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding TemperatureMax, StringFormat='{0}°C'}"    TextColor="Black"  FontSize="15"  FontFamily="Muli.ttf#Muli" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </StackLayout>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+
+        </StackLayout>
+    </ScrollView>
+
+
+</ContentPage>

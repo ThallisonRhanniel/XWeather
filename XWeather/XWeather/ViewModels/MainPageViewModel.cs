@@ -14,6 +14,7 @@ using Xamarin.Essentials;
 using XWeather.Database;
 using XWeather.Helpers;
 using XWeather.Models;
+using XWeather.Views;
 
 namespace XWeather.ViewModels
 {
@@ -473,7 +474,7 @@ namespace XWeather.ViewModels
 
             NextSevenDaysCommand = new DelegateCommand(async () =>
             {
-                await NavigationService.NavigateAsync("SecondPage");
+                await NavigationService.NavigateAsync($"{nameof(WeeklyView)}");
             });
 
             OkayCommand = new DelegateCommand(async () =>
