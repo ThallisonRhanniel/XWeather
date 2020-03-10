@@ -12,6 +12,7 @@ using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
 using Xamarin.Essentials;
 using XWeather.Database;
+using XWeather.Helpers;
 using XWeather.Models;
 
 namespace XWeather.ViewModels
@@ -21,14 +22,14 @@ namespace XWeather.ViewModels
 
         #region Properties
 
-        private string _animationFile = "permission_location.json";
+        private string _animationFile = Animation.FilePermission;
         public string AnimationFile
         {
             get { return _animationFile; }
             set { SetProperty(ref _animationFile, value); }
         }
 
-        private string _animationText = "Olá! precisamos da sua permissão. \r\n       Por favor, ative o GPS.";
+        private string _animationText = Animation.TextPermissionGps;
         public string AnimationText
         {
             get { return _animationText; }
@@ -192,23 +193,22 @@ namespace XWeather.ViewModels
         {
             base.Initialize(parameters);
 
-
-            //se já tiver dados no bando de dados não precisa sincronizar de novo.
-            //var weatherOffline = await GetWeatherOfflineAsync();
-            //if (weatherOffline?.Currently != null)
-            //{
-            //    AnimationIsVisible = false;
-            //    await StartData();
-            //}
-            //else
-            //{
-            //    if (!HasInternetConnetion())
-            //    {
-            //        AnimationFile = "wifi_off.json";
-            //        AnimationText = "Sem Internet...";
-            //        return;
-            //    }
-            //}
+            //Se já tiver dados no bando de dados não precisa sincronizar de novo.
+            var weatherOffline = await GetWeatherOfflineAsync();
+            if (weatherOffline?.Currently != null)
+            {
+                AnimationIsVisible = false;
+                await StartData();
+            }
+            else
+            {
+                if (!HasInternetConnetion())
+                {
+                    AnimationFile = Animation.FileWifi;
+                    AnimationText = Animation.WithoutConnection;
+                    return;
+                }
+            }
         }
 
         private async Task StartData()
@@ -219,9 +219,7 @@ namespace XWeather.ViewModels
                 FillScreenData(weatherOffline);
             else
             {
-
-                //só solicito o gps após concender as permissões.
-                //var result = await GetPosition();
+                //Pego os dados na API da WEB.
                 var weatherApi = await GetWeatherAsync();
                 await SaveWeatherOffline(weatherApi);
                 FillScreenData(weatherApi);
@@ -233,7 +231,6 @@ namespace XWeather.ViewModels
 
             try
             {
-
                 var location =
                      await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Default,
                          TimeSpan.FromSeconds(4)));
@@ -272,13 +269,13 @@ namespace XWeather.ViewModels
             try
             {
                 var api = GetApi();
+                //Para chegar aqui é necessário conceder acesso ao GPS.
                 var result = await GetPosition();
                 var weather = await api.GetWeather(result.Latitude, result.Longitude);
                 return weather;
             }
             catch (Exception e)
             {
-
                 Console.WriteLine(e.Message);
                 return null;
             }
@@ -332,7 +329,6 @@ namespace XWeather.ViewModels
         private void FillScreenData(WeatherModel weather)
         {
             //Dados superior
-
             Icon = weather.Currently.Icon.Replace('-', '_');
 
             Date = UnixTimeStampToDateTime(weather.Currently.Time);
@@ -404,29 +400,12 @@ namespace XWeather.ViewModels
 
         protected async Task<bool> RequestIfPermissionAreValid()
         {
-            if (await RequestPermissions(Permission.Storage).ConfigureAwait(false) && await RequestPermissions(Permission.Location).ConfigureAwait(false))
+            if (await RequestPermissions(Permission.Storage) && await RequestPermissions(Permission.Location))
                 return true;
             else
                 return false;
             
 
-        }
-
-        private async Task testeAsync()
-        {
-            var permissionsToRequest = new List<Plugin.Permissions.Abstractions.Permission>();
-            var locationStatus = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Location);
-            if (locationStatus != PermissionStatus.Granted)
-            {
-                permissionsToRequest.Add(Plugin.Permissions.Abstractions.Permission.Location);
-            }
-
-            var storageStatus = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
-            if (storageStatus != PermissionStatus.Granted)
-            {
-                permissionsToRequest.Add(Plugin.Permissions.Abstractions.Permission.Storage);
-            }
-            var res = await CrossPermissions.Current.RequestPermissionsAsync(permissionsToRequest.ToArray());
         }
 
 
@@ -461,7 +440,6 @@ namespace XWeather.ViewModels
         {
             var current = Connectivity.NetworkAccess;
 
-            // Connection to internet is available
             if (current == NetworkAccess.Internet)
                 return true;
             else
@@ -501,32 +479,28 @@ namespace XWeather.ViewModels
             OkayCommand = new DelegateCommand(async () =>
             {
 
+                if (!HasInternetConnetion())
+                {
+                    AnimationFile = Animation.FileWifi;
+                    AnimationText = Animation.WithoutConnection;
+                    return;
+                }
+
                 if (await RequestIfPermissionAreValid())
                 {
                     //altero a animação
-                    AnimationFile = "loading.json";
-                    AnimationText = "Carregando...";
+                    AnimationFile = Animation.LoadingFile;
+                    AnimationText = Animation.TextLoading;
                     ButtonOkayIsVisible = false;
                     await StartData();
                     AnimationIsVisible = false;
                 }
                 else
                 {
-                    AnimationText = "Olá! precisamos da sua permissão. \r\n       Por favor, ative o GPS.";
-                    AnimationFile = "permission_location.json";
+                    AnimationText = Animation.TextPermissionGps;
+                    AnimationFile = Animation.FilePermission;
                     ButtonOkayIsVisible = true;
                 }
-
-                //if (!HasInternetConnetion())
-                //{
-                //    AnimationFile = "wifi_off.json";
-                //    AnimationText = "Sem Internet...";
-                //    return;
-                //}
-
-
-
-
             });
         }
     }

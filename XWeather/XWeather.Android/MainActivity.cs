@@ -1,8 +1,10 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Runtime;
 using Lottie.Forms.Droid;
 using Plugin.CurrentActivity;
+using Plugin.Permissions;
 using Prism;
 using Prism.Ioc;
 
@@ -25,6 +27,13 @@ namespace XWeather.Droid
             AnimationViewRenderer.Init();
             XF.Material.Droid.Material.Init(this, bundle);
             LoadApplication(new App(new AndroidInitializer()));
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        {
+            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
